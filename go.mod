@@ -10,7 +10,7 @@ require (
 	github.com/sigstore/cosign v1.9.0
 	github.com/sigstore/rekor v0.8.0
 	github.com/sigstore/sigstore v1.2.1-0.20220526001230-8dc4fa90a468
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
