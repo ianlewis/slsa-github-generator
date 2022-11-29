@@ -133,7 +133,7 @@ jobs:
 
           # NOTE: Disable cosign's ambient providers because we use 'cosign login'.
           COSIGN_EXPERIMENTAL=1 cosign attest \
-            --oidc-disable-ambient-providers
+            --oidc-disable-ambient-providers \
             --predicate="$predicate_name" \
             --type slsaprovenance \
             --force \
