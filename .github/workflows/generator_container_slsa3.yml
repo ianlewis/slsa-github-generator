@@ -124,6 +124,8 @@ jobs:
           UNTRUSTED_IMAGE: "${{ inputs.image }}"
           UNTRUSTED_DIGEST: "${{ inputs.digest }}"
           GITHUB_CONTEXT: "${{ toJSON(github) }}"
+          GITHUB_ACTOR: "${{ inputs.registry-username }}"
+          GITHUB_TOKEN: "${{ secrets.registry-password }}"
         run: |
           set -euo pipefail
 
