@@ -42,3 +42,10 @@ func Errorf(err Wrappable, format string, a ...any) error {
 	err.setWrapped(fmt.Errorf(format, a...))
 	return err
 }
+
+// CheckAs wraps As allowing the caller to pass an error instance rather than a
+// concrete error type. This is useful for table-driven tests where errors can
+// be stored in error instances but checked with their concrete types.
+func CheckAs[T error](got error, want T) bool {
+	return As(got, &want)
+}

@@ -11,6 +11,9 @@ import (
 
 func TestWrappable(t *testing.T) {
 	t.Run("Is EOF", func(t *testing.T) {
+		// Tests that both the type of the error instance can be checked using
+		// As and the error instance can be checked using Is.
+
 		type errFoo struct {
 			WrappableError
 		}
@@ -25,6 +28,12 @@ func TestWrappable(t *testing.T) {
 		if want, got := false, errors.Is(err, io.ErrClosedPipe); want != got {
 			t.Errorf("unexpected result, want: %v, got: %v", want, got)
 		}
+
+		wantErr := &errFoo{}
+		if want, got := wantErr, err; !errors.As(got, &want) {
+			t.Errorf("unexpected result, want: %v, got: %v", want, got)
+		}
+
 	})
 
 	t.Run("As DNSError", func(t *testing.T) {
@@ -89,6 +98,21 @@ func TestErrorf(t *testing.T) {
 
 		var notAs *fs.PathError
 		if want, got := false, errors.As(err, &notAs); want != got {
+			t.Errorf("unexpected result, want: %v, got: %v", want, got)
+		}
+	})
+}
+
+func TestCheckAs(t *testing.T) {
+	t.Run("error type", func(t *testing.T) {
+		type errFoo struct {
+			WrappableError
+		}
+
+		var got, want error
+		got = &errFoo{}
+		want = &errFoo{}
+		if !CheckAs(got, want) {
 			t.Errorf("unexpected result, want: %v, got: %v", want, got)
 		}
 	})

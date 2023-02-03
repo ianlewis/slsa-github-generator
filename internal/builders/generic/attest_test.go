@@ -24,38 +24,10 @@ const (
 
 // TestParseSubjects tests the parseSubjects function.
 func TestParseSubjects(t *testing.T) {
-	errNoNameFunc := func(got error) {
-		want := &errNoName{}
-		if !errors.As(got, &want) {
-			t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-		}
-	}
-
-	errShaFunc := func(got error) {
-		want := &errSha{}
-		if !errors.As(got, &want) {
-			t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-		}
-	}
-
-	errDuplicateSubjectFunc := func(got error) {
-		want := &errDuplicateSubject{}
-		if !errors.As(got, &want) {
-			t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-		}
-	}
-
-	errBase64Func := func(got error) {
-		want := &errBase64{}
-		if !errors.As(got, &want) {
-			t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-		}
-	}
-
 	testCases := []struct {
 		name     string
 		str      string
-		err      func(error)
+		err      error
 		expected []intoto.Subject
 	}{
 		{
@@ -152,13 +124,13 @@ func TestParseSubjects(t *testing.T) {
 			// echo "2e0390eb024a52963db7b95e84a9c2b12c004054a7bad9a97ec0c7c89d4681d2" | base64 -w0
 			str: "MmUwMzkwZWIwMjRhNTI5NjNkYjdiOTVlODRhOWMyYjEyYzAwNDA1NGE3YmFkOWE5N2VjMGM3Yzg5ZDQ2ODFkMgo=",
 			// err: &errNoName{},
-			err: errNoNameFunc,
+			err: &errNoName{},
 		},
 		{
 			name: "invalid hash",
 			// echo "abcdef hoge" | base64 -w0
 			str: "YWJjZGVmIGhvZ2UK",
-			err: errShaFunc,
+			err: &errSha{},
 		},
 		{
 			name: "duplicate name",
@@ -166,24 +138,24 @@ func TestParseSubjects(t *testing.T) {
 			// hoge\n2e0390eb024a52963db7b95e84a9c2b12c004054a7bad9a97ec0c7c89d4681d2 hoge" | base64 -w0
 			str: "MmUwMzkwZWIwMjRhNTI5NjNkYjdiOTVlODRhOWMyYjEyYzAwNDA1NGE3YmFkOWE5N2VjMGM3Yzg5ZDQ2ODFkMiBob2dl" +
 				"CjJlMDM5MGViMDI0YTUyOTYzZGI3Yjk1ZTg0YTljMmIxMmMwMDQwNTRhN2JhZDlhOTdlYzBjN2M4OWQ0NjgxZDIgaG9nZQo=",
-			err: errDuplicateSubjectFunc,
+			err: &errDuplicateSubject{},
 		},
 		{
 			name: "not base64",
 			str:  "this is not base64",
-			err:  errBase64Func,
+			err:  &errBase64{},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if s, err := parseSubjects(tc.str); err != nil {
-				if tc.err != nil {
-					tc.err(err)
+				if tc.err != nil && !errors.CheckAs(err, tc.err) {
+					t.Fatalf("unexpected error: %v", cmp.Diff(err, tc.err, cmpopts.EquateErrors()))
 				}
 			} else {
-				if tc.err != nil {
-					tc.err(err)
+				if tc.err != nil && !errors.CheckAs(err, tc.err) {
+					t.Fatalf("unexpected error: %v", cmp.Diff(err, tc.err, cmpopts.EquateErrors()))
 				}
 
 				if want, got := tc.expected, s; !cmp.Equal(want, got) {
