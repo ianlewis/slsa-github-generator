@@ -288,6 +288,10 @@ func Test_runBuild(t *testing.T) {
 				return
 			}
 
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
 			if ret, err := file.Seek(0, 0); ret != 0 || err != nil {
 				t.Errorf("seek to zero")
 			}

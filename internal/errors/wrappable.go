@@ -26,7 +26,11 @@ type WrappableError struct {
 }
 
 func (e *WrappableError) Error() string {
-	return e.err.Error()
+	wrapped := e.Unwrap()
+	if wrapped == nil {
+		return ""
+	}
+	return wrapped.Error()
 }
 
 func (e *WrappableError) Unwrap() error {

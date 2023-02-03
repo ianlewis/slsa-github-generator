@@ -104,15 +104,31 @@ func TestErrorf(t *testing.T) {
 }
 
 func TestCheckAs(t *testing.T) {
-	t.Run("error type", func(t *testing.T) {
+	t.Run("error type equal", func(t *testing.T) {
 		type errFoo struct {
 			WrappableError
 		}
 
 		var got, want error
-		got = &errFoo{}
+		got = Errorf(&errFoo{}, "foo")
 		want = &errFoo{}
 		if !CheckAs(got, want) {
+			t.Errorf("unexpected result, want: %v, got: %v", want, got)
+		}
+	})
+
+	t.Run("error type not equal", func(t *testing.T) {
+		type errFoo struct {
+			WrappableError
+		}
+		type errBar struct {
+			WrappableError
+		}
+
+		var got, want error
+		got = Errorf(&errFoo{}, "foo")
+		want = &errBar{}
+		if CheckAs(got, want) {
 			t.Errorf("unexpected result, want: %v, got: %v", want, got)
 		}
 	})
