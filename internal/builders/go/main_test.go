@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"github.com/slsa-framework/slsa-github-generator/internal/builders/go/pkg"
+	"github.com/slsa-framework/slsa-github-generator/internal/errors"
 	"github.com/slsa-framework/slsa-github-generator/internal/utils"
 )
 
@@ -36,27 +36,6 @@ func checkWorkingDir(t *testing.T, wd, expected string) {
 	}
 }
 
-func errInvalidDirectoryFunc(t *testing.T, got error) {
-	want := &pkg.ErrInvalidDirectory{}
-	if !errors.As(got, &want) {
-		t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-	}
-}
-
-func errUnsupportedVersionFunc(t *testing.T, got error) {
-	want := &pkg.ErrUnsupportedVersion{}
-	if !errors.As(got, &want) {
-		t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-	}
-}
-
-func errInvalidEnvironmentVariableFunc(t *testing.T, got error) {
-	want := &pkg.ErrInvalidEnvironmentVariable{}
-	if !errors.As(got, &want) {
-		t.Fatalf("unexpected error: %v", cmp.Diff(got, want, cmpopts.EquateErrors()))
-	}
-}
-
 func Test_runBuild(t *testing.T) {
 	t.Parallel()
 
@@ -66,7 +45,7 @@ func Test_runBuild(t *testing.T) {
 		config     string
 		evalEnvs   string
 		workingDir string
-		err        func(*testing.T, error)
+		err        error
 		commands   []string
 		envs       []string
 	}{
@@ -256,32 +235,32 @@ func Test_runBuild(t *testing.T) {
 		{
 			name:   "invalid main",
 			config: "./pkg/testdata/releaser-invalid-main.yml",
-			err:    errInvalidDirectoryFunc,
+			err:    &pkg.ErrInvalidDirectory{},
 		},
 		{
 			name:   "missing version",
 			config: "./pkg/testdata/releaser-noversion.yml",
-			err:    errUnsupportedVersionFunc,
+			err:    &pkg.ErrUnsupportedVersion{},
 		},
 		{
 			name:   "invalid version",
 			config: "./pkg/testdata/releaser-invalid-version.yml",
-			err:    errUnsupportedVersionFunc,
+			err:    &pkg.ErrUnsupportedVersion{},
 		},
 		{
 			name:   "invalid envs",
 			config: "./pkg/testdata/releaser-invalid-envs.yml",
-			err:    errInvalidEnvironmentVariableFunc,
+			err:    &pkg.ErrInvalidEnvironmentVariable{},
 		},
 		{
 			name:   "invalid path",
 			config: "../pkg/testdata/releaser-invalid-main.yml",
-			err:    errInvalidDirectoryFunc,
+			err:    &pkg.ErrInvalidDirectory{},
 		},
 		{
 			name:   "invalid dir path",
 			config: "../pkg/testdata/releaser-invalid-dir.yml",
-			err:    errInvalidDirectoryFunc,
+			err:    &pkg.ErrInvalidDirectory{},
 		},
 	}
 
@@ -303,10 +282,9 @@ func Test_runBuild(t *testing.T) {
 				tt.evalEnvs)
 
 			if tt.err != nil {
-				tt.err(t, err)
-			}
-
-			if err != nil {
+				if !errors.CheckAs(err, tt.err) {
+					t.Fatalf("unexpected error: %v", cmp.Diff(err, tt.err, cmpopts.EquateErrors()))
+				}
 				return
 			}
 
