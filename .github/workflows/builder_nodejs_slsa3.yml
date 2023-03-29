@@ -127,7 +127,7 @@ jobs:
       - name: Clone npm fork
         id: clone-fork
         env:
-          NPM_GIT_SHA: 68048cc382a4538032e15c730ebe0956b62725c1
+          NPM_GIT_SHA: 53c6995a62eacb959977c9571e4840c4de427e89
         run: |
           set -euo pipefail
 
