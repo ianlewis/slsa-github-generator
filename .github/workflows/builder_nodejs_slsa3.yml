@@ -127,7 +127,7 @@ jobs:
       - name: Clone npm fork
         id: clone-fork
         env:
-          NPM_GIT_SHA: bc657b76f09cbdd5801e360633898b14a4bbc5e8
+          NPM_GIT_SHA: 68048cc382a4538032e15c730ebe0956b62725c1
         run: |
           set -euo pipefail
 
@@ -187,7 +187,7 @@ jobs:
 
           # Run npm publish using npm fork. We are temporarily using a fork so
           # that we can specify the provenance bundle.
-          publish_flags="--provenance ${attestation_realpath}"
+          publish_flags="--provenance-bundle ${attestation_realpath}"
           if [[ "${UNTRUSTED_ACCESS}" != "" ]]; then
             # We need to validate the input so that it doesn't inject commands or other arguments.
             # We will let npm validate the input but we will just make sure it's a single alphabetic string.
