@@ -123,7 +123,14 @@ jobs:
   # TODO(1419): Add more tests that manipulate the token.
 
   if-succeed:
-    needs: [setup-token, verify-token]
+    needs:
+      [
+        setup-token,
+        verify-token-success,
+        verify-token-mismatch-recipient,
+        verify-token-mismatch-token,
+        verify-token-invalid-mask,
+      ]
     runs-on: ubuntu-latest
     if: github.event_name != 'workflow_dispatch' && needs.setup-token.result != 'failure' && needs.verify-token-success.result != 'failure' && needs.verify-token-mismatch-recipient.result != 'failure' && needs.verify-token-mismatch-token.result != 'failure' && needs.verify-token-invalid-mask.result != 'failure'
     permissions:
@@ -137,7 +144,14 @@ jobs:
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
-    needs: [setup-token, verify-token]
+    needs:
+      [
+        setup-token,
+        verify-token-success,
+        verify-token-mismatch-recipient,
+        verify-token-mismatch-token,
+        verify-token-invalid-mask,
+      ]
     runs-on: ubuntu-latest
     # We use `== 'failure'` instead of ` != 'success'` because we want to ignore skipped jobs, if there are any.
     if: always() && github.event_name != 'workflow_dispatch' && (needs.setup-token.result == 'failure' || needs.verify-token-success.result == 'failure' || needs.verify-token-mismatch-recipient.result == 'failure' || needs.verify-token-mismatch-token.result == 'failure' || needs.verify-token-invalid-mask.result == 'failure')
