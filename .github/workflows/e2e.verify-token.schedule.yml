@@ -67,58 +67,46 @@ jobs:
   verify-token-success:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
     needs: [setup-token]
-    steps:
-      - id: verify
-        uses: ./.github/workflows/e2e.verify-token.reusable.yml
-        with:
-          slsa-unverified-token: ${{ needs.setup-token.outputs.valid-token }}
-          slsa-workflow-recipient: "delegator_generic_slsa3.yml"
-          output-predicate: predicate.json
+    uses: ./.github/workflows/e2e.verify-token.reusable.yml
+    with:
+      slsa-unverified-token: ${{ needs.setup-token.outputs.valid-token }}
+      slsa-workflow-recipient: "delegator_generic_slsa3.yml"
+      output-predicate: predicate.json
 
   verify-token-mismatch-recipient:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
     needs: [setup-token]
-    steps:
-      - id: verify
-        uses: ./.github/workflows/e2e.verify-token.reusable.yml
-        with:
-          slsa-unverified-token: ${{ needs.setup-token.outputs.valid-token }}
-          slsa-workflow-recipient: "elegator_generic_slsa3.yml"
-          output-predicate: mismatch-recipient-predicate.json
-          continue-on-error: true
+    uses: ./.github/workflows/e2e.verify-token.reusable.yml
+    with:
+      slsa-unverified-token: ${{ needs.setup-token.outputs.valid-token }}
+      slsa-workflow-recipient: "elegator_generic_slsa3.yml"
+      output-predicate: mismatch-recipient-predicate.json
+      continue-on-error: true
 
   verify-token-mismatch-token:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
     needs: [setup-token]
-    steps:
-      - id: verify
-        uses: ./.github/workflows/e2e.verify-token.reusable.yml
-        with:
-          slsa-unverified-token: aGVsbG8K
-          slsa-workflow-recipient: "delegator_generic_slsa3.yml"
-          output-predicate: mismatch-token-predicate.json
-          continue-on-error: true
+    uses: ./.github/workflows/e2e.verify-token.reusable.yml
+    with:
+      slsa-unverified-token: aGVsbG8K
+      slsa-workflow-recipient: "delegator_generic_slsa3.yml"
+      output-predicate: mismatch-token-predicate.json
+      continue-on-error: true
 
   verify-token-invalid-mask:
     permissions:
       contents: read
-    runs-on: ubuntu-latest
     needs: [setup-token]
-    steps:
-      - id: verify
-        uses: ./.github/workflows/e2e.verify-token.reusable.yml
-        with:
-          # name7 does not exist in the inputs so it should trigger an error.
-          slsa-unverified-token: ${{ needs.setup-token.outputs.invalid-mask-token }}
-          slsa-workflow-recipient: "delegator_generic_slsa3.yml"
-          output-predicate: invalid-mask-predicate.json
-          continue-on-error: true
+    uses: ./.github/workflows/e2e.verify-token.reusable.yml
+    with:
+      # name7 does not exist in the inputs so it should trigger an error.
+      slsa-unverified-token: ${{ needs.setup-token.outputs.invalid-mask-token }}
+      slsa-workflow-recipient: "delegator_generic_slsa3.yml"
+      output-predicate: invalid-mask-predicate.json
+      continue-on-error: true
 
   # TODO(1419): Add more tests that manipulate the token.
 
