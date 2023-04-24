@@ -1,0 +1,59 @@
+# verify-token wrapped in a reusable workflow.
+#
+# verify-token is wrapped in a reusable workflow because verify-token separates
+# inputs between reusable workflows an the parent caller workflow as part of
+# the verification process.
+# See: https://github.com/actions/runner/issues/2274
+
+name: verify-token reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      slsa-unverified-token:
+        required: false
+        type: string
+      slsa-workflow-recipient:
+        required: false
+        type: string
+      output-predicate:
+        required: false
+        type: string
+      continue-on-error:
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      slsa-verified-token:
+        value: ${{ jobs.verify-token.outputs.slsa-verified-token }}
+      tool-repository:
+        value: ${{ jobs.verify-token.outputs.tool-repository }}
+      tool-ref:
+        value: ${{ jobs.verify-token.outputs.tool-ref }}
+
+jobs:
+  verify-token:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      slsa-verified-token: ${{ steps.verify.slsa-verified-token }}
+      tool-repository: ${{ steps.verify.tool-repository }}
+      tool-ref: ${{ steps.verify.tool-ref }}
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - id: verify
+        uses: ./.github/actions/verify-token
+        continue-on-error: ${{ inputs.continue-on-error }}
+        with:
+          slsa-unverified-token: ${{ inputs.slsa-unverified-token }}
+          slsa-workflow-recipient: ${{ inputs.slsa-workflow-recipient }}
+          output-predicate: ${{ inputs.output-predicate }}
+      - env:
+          VERIFIED_TOKEN: ${{ steps.verify.outputs.slsa-verified-token }}
+          TOOL_REPOSITORY: ${{ steps.verify.outputs.tool-repository }}
+          TOOL_REF: ${{ steps.verify.outputs.tool-ref }}
+          PREDICATE: ${{ inputs.output-predicate }}
+        # NOTE: Don't verify if an error is expected.
+        if: ${{ ! inputs.continue-on-error }}
+        run: ./.github/workflows/scripts/schedule.actions/verify-verified-token.sh
