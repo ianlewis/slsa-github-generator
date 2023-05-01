@@ -148,7 +148,8 @@ jobs:
       - name: Generate builder
         id: generate-builder
         continue-on-error: true
-        uses: slsa-framework/slsa-github-generator/.github/actions/generate-builder@v1.6.0-rc.2
+        # uses: slsa-framework/slsa-github-generator/.github/actions/generate-builder@v1.6.0-rc.2
+        uses: ianlewis/slsa-github-generator/.github/actions/generate-builder@v1.6.0-rc.2
         with:
           repository: "${{ needs.detect-env.outputs.repository }}"
           ref: "${{ needs.detect-env.outputs.ref }}"
