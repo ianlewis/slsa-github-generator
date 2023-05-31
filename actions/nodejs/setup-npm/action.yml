@@ -31,8 +31,12 @@ runs:
       env:
         # This points to the slsa-framework/npm-cli oob-provenance branch
         # which contains patches to the v9.6.5 release of the npm cli.
-        NPM_REMOTE_URL: "https://github.com/slsa-framework/npm-cli.git"
-        NPM_GIT_SHA: "be87719832648731541cf6019c00320f479cafe5"
+        # NPM_REMOTE_URL: "https://github.com/slsa-framework/npm-cli.git"
+        # NPM_GIT_SHA: "be87719832648731541cf6019c00320f479cafe5"
+
+        # FIXME: Testing bdehamer's branch for https://github.com/npm/cli/pull/6490
+        NPM_REMOTE_URL: "https://github.com/npm/cli.git"
+        NPM_GIT_SHA: "6b9138d6e1e2d24cbc19d7bbe98e7707fbf41c00"
       run: |
         set -euo pipefail
 

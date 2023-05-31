@@ -89,7 +89,9 @@ runs:
       run: |
         set -euo pipefail
 
-        publish_flags="--provenance ${ATTESTATION_PATH}"
+        # FIXME: Testing bdehamer's branch for https://github.com/npm/cli/pull/6490
+        # publish_flags="--provenance ${ATTESTATION_PATH}"
+        publish_flags="--provenance-path ${ATTESTATION_PATH}"
         if [[ "${ACCESS}" != "" ]]; then
           publish_flags="${publish_flags} --access=${ACCESS}"
         fi
