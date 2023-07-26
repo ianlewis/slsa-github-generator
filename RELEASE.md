@@ -136,7 +136,12 @@ There is one integration test we cannot easily test "live", so we need to simula
    ```
 
 2. Ensure your fork of the builder is at the same commit hash as the official builder's `$BUILDER_TAG` release.
-3. Create a new branch `git checkout -b "$BUILDER_REF"`
+3. Create a new branch
+
+   ```shell
+   git checkout -b "$BUILDER_REF"
+   ```
+
 4. Update the file `$BUILDER_REPOSITORY/main/.github/actions/generate-builder/action.yml` by replacing the strings `BUILDER_REPOSITORY` and `VERIFIER_REPOSITORY` with your own username (value of `$GITHUB_USERNAME`). Then push the changes.
 5. For the Go builder, update the file `$BUILDER_REPOSITORY/main/.github/workflows/builder_go_slsa3.yml` to:
 
@@ -174,11 +179,11 @@ There is one integration test we cannot easily test "live", so we need to simula
 
 10. Create a release for the builders for this branch:
 
-   ```shell
-   "$GH" release -R "$BUILDER_REPOSITORY" create "$BUILDER_TAG" --title "$BUILDER_TAG" --notes "pre-release tests for $BUILDER_TAG $(date)" --target "$BUILDER_REF"
-   ```
+    ```shell
+    "$GH" release -R "$BUILDER_REPOSITORY" create "$BUILDER_TAG" --title "$BUILDER_TAG" --notes "pre-release tests for $BUILDER_TAG $(date)" --target "$BUILDER_REF"
+    ```
 
-   This will trigger a workflow release, let it complete and generate the release assets.
+    This will trigger a workflow release, let it complete and generate the release assets.
 
 #### Go builder verifier test
 
@@ -467,7 +472,8 @@ and verifier's code.
 3. Tick the `This is a pre-release` option.
 4. Click `Publish release`.
 
-This will trigger the [release workflow](https://github.com/slsa-framework/slsa-github-generator/actions/workflows/release.yml). Cancel this in the [UI](https://github.com/slsa-framework/slsa-github-generator/actions/workflows/release.yml).
+   This will trigger the [release workflow](https://github.com/slsa-framework/slsa-github-generator/actions/workflows/release.yml).
+   Cancel this in the [UI](https://github.com/slsa-framework/slsa-github-generator/actions/workflows/release.yml).
 
 ### Verify final version references
 
